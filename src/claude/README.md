@@ -17,7 +17,7 @@ Or just use the container we publish, which is this feature already applied to t
 }
 ```
 
-## Setup 
+## Setup
 
 ### Credentials
 
@@ -32,8 +32,8 @@ Do this **before** you open the container. The firewall uses this file on build 
 ### Firewall
 
 At startup, `init-firewall.sh` drops all outbound traffic except GitHub, DNS,
-SSH, your host network, and whatever you list in `ALLOWED_DOMAINS`. You can customize this in the claude environment file too. The firewall is run by `claude-start.sh`, set as the feature's `postStartCommand`. 
+SSH, your host network, and whatever you list in `ALLOWED_DOMAINS`. You can customize this in the claude environment file too. The firewall is run by `claude-start.sh`, set as the feature's `postStartCommand`.
 
 ### Permissions
 
-[settings.json](settings.json) blocks reads and edits of `~/.claude`, `.env`, `.env.*`, and `secrets/`. 
+[settings.json](settings.json) blocks reads and edits of `~/.claude`, `.env`, `.env.*`, and `secrets/`.
