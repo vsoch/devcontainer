@@ -64,6 +64,7 @@ Each environment is in `src/<name>/`:
 | `Dockerfile` | The build itself — flux only |
 | `devcontainer-feature.json` | Describes the feature and what it contributes — claude only |
 | `install.sh` | Runs as root during the build — claude only |
+| `start.sh` | Runs at container start — claude only |
 | anything else | Shipped along with the feature and available to `install.sh` |
 
 For flux, edit the Dockerfile. For claude, edit `install.sh` and bump
