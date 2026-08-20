@@ -1,0 +1,5 @@
+# site-specific claude code configuration, never committed
+claude.env
+**/.devcontainer/claude.env
+
+.DS_Store

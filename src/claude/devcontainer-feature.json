@@ -1,0 +1,42 @@
+{
+  "id": "claude",
+  "version": "1.0.0",
+  "name": "Claude Code",
+  "description": "Claude Code, an egress firewall that restricts the container to hosts you name, and shared permission rules.",
+  "documentationURL": "https://github.com/vsoch/devcontainer/tree/main/src/claude",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "ai"
+  ],
+  "options": {
+    "version": {
+      "type": "string",
+      "default": "latest",
+      "proposals": [
+        "latest"
+      ],
+      "description": "Version of @anthropic-ai/claude-code to install from npm."
+    }
+  },
+  "capAdd": [
+    "NET_ADMIN"
+  ],
+  "containerEnv": {
+    "CLAUDE_ENV_FILE": "${containerWorkspaceFolder}/.devcontainer/claude.env",
+    "NODE_OPTIONS": "--max-old-space-size=4096"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code"
+      ]
+    }
+  },
+  "postStartCommand": "sudo /usr/local/bin/init-firewall.sh \"$CLAUDE_ENV_FILE\"",
+  "dependsOn": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "Claude Developer Environment",
+  "image": "ghcr.io/vsoch/devcontainer/images/flux:latest",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/vsoch/devcontainer/claude:1": {}
+  }
+}
