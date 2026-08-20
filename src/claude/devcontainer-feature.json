@@ -1,6 +1,6 @@
 {
   "id": "claude",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "Claude Code",
   "description": "Claude Code, an egress firewall that restricts the container to hosts you name, and shared permission rules.",
   "documentationURL": "https://github.com/vsoch/devcontainer/tree/main/src/claude",
@@ -23,7 +23,6 @@
     "NET_ADMIN"
   ],
   "containerEnv": {
-    "CLAUDE_ENV_FILE": "${containerWorkspaceFolder}/.devcontainer/claude.env",
     "NODE_OPTIONS": "--max-old-space-size=4096"
   },
   "customizations": {
@@ -33,7 +32,7 @@
       ]
     }
   },
-  "postStartCommand": "sudo /usr/local/bin/init-firewall.sh \"$CLAUDE_ENV_FILE\"",
+  "postStartCommand": "/usr/local/bin/claude-start.sh ${containerWorkspaceFolder}",
   "dependsOn": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "22"
