@@ -1,0 +1,88 @@
+name: publish
+on:
+  pull_request: {}
+  push:
+    branches:
+      - main
+
+# Rebuild weekly
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch: {}
+
+jobs:
+
+# The flux environment is a Dockerfile.
+  flux-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Login to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build flux image
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: src/flux/image.json
+          imageName: ghcr.io/vsoch/devcontainer/images/flux
+          imageTag: latest,${{ github.sha }}
+          cacheFrom: ghcr.io/vsoch/devcontainer/images/flux
+          # Keep the uid/gid from the Dockerfile (1000) instead of rewriting
+          # them to match the runner, since the image is shared across machines
+          skipContainerUserIdUpdate: true
+          push: ${{ github.event_name == 'pull_request' && 'never' || 'always' }}
+
+# The claude environment is a feature, installs onto any Debian or Ubuntu base
+  claude-feature:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Install devcontainer CLI
+        run: npm install -g @devcontainers/cli
+      - name: Validate feature
+        if: github.event_name == 'pull_request'
+        run: devcontainer features package ./src --output-folder /tmp/features --force-clean-output-folder
+      - name: Publish feature
+        if: github.event_name != 'pull_request'
+        run: devcontainer features publish ./src -r ghcr.io -n vsoch/devcontainer
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# Claude feature on top of the flux image.
+  claude-image:
+    needs: [flux-image, claude-feature]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build claude image
+        uses: devcontainers/ci@v0.3
+        with:
+          configFile: src/claude/image.json
+          imageName: ghcr.io/vsoch/devcontainer/images/claude
+          imageTag: latest,${{ github.sha }}
+          cacheFrom: ghcr.io/vsoch/devcontainer/images/claude
+          skipContainerUserIdUpdate: true
+          push: always
